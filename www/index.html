@@ -1,54 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillSync App</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
         .container {
             background: white;
             padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             max-width: 600px;
             width: 90%;
         }
-
-        h1 {
-            color: #333;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        p {
-            color: #666;
-            line-height: 1.6;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
+        h1 { color: #333; margin-bottom: 1rem; text-align: center; }
+        p { color: #666; line-height: 1.6; text-align: center; margin-bottom: 2rem; }
+        .button-group { display: flex; gap: 1rem; justify-content: center; }
         button {
             padding: 0.75rem 1.5rem;
             border: none;
@@ -57,38 +33,27 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-secondary { background: #f0f0f0; color: #333; }
 
-        .btn-primary {
+        /* Dashboard page */
+        .page { display: none; }
+        .page.active { display: block; }
+        .skill-card {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 4px solid #667eea;
+        }
+        .back-btn {
             background: #667eea;
             color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
+            margin-bottom: 1rem;
         }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>🎯 SkillSync App</h1>
-        <p>Welcome to SkillSync! Your platform for learning and mastering new skills.</p>
-        <div class="button-group">
-            <button class="btn-primary">Get Started</button>
-            <button class="btn-secondary">Learn More</button>
-        </div>
-    </div>
-</body>
+    <!-- Home Page -->
+    <d
 
-</html>
