@@ -1,5 +1,6 @@
 {
-  "appId": "com.example.app",
-  "appName": "skillsync-app",
-  "webDir": "public"
+  "appId": "com.skillsync.app",
+  "appName": "SkillSync",
+  "webDir": "www",
+  "bundledWebRuntime": false
 }
