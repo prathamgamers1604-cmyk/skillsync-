@@ -2,5 +2,7 @@
   "appId": "com.skillsync.app",
   "appName": "SkillSync",
   "webDir": "www",
-  "bundledWebRuntime": false
+  "server": {
+    "androidScheme": "https"
+  }
 }
