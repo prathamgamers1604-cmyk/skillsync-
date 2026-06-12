@@ -19,11 +19,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Prepare www folder
-        run: |
-          mkdir -p www
-          cp index.html www/
-
       - name: Install Capacitor CLI
         run: npm install -g @capacitor/cli
 
