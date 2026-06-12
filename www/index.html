@@ -1,59 +1,1273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillSync App</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            max-width: 600px;
-            width: 90%;
-        }
-        h1 { color: #333; margin-bottom: 1rem; text-align: center; }
-        p { color: #666; line-height: 1.6; text-align: center; margin-bottom: 2rem; }
-        .button-group { display: flex; gap: 1rem; justify-content: center; }
-        button {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-secondary { background: #f0f0f0; color: #333; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillSync</title>
+<style>
+  :root {
+    --purple: #6C63FF;
+    --purple-dark: #4B44CC;
+    --purple-light: #EEF0FF;
+    --green: #22C55E;
+    --orange: #F97316;
+    --red: #EF4444;
+    --bg: #F5F6FF;
+    --card: #FFFFFF;
+    --text: #1A1A2E;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(108,99,255,0.10);
+  }
 
-        /* Dashboard page */
-        .page { display: none; }
-        .page.active { display: block; }
-        .skill-card {
-            background: #f8f9ff;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-left: 4px solid #667eea;
-        }
-        .back-btn {
-            background: #667eea;
-            color: white;
-            margin-bottom: 1rem;
-        }
-    </style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ---- PAGES ---- */
+  .page { display: none; min-height: 100vh; flex-direction: column; }
+  .page.active { display: flex; }
+
+  /* ---- SPLASH / ONBOARDING ---- */
+  #splash {
+    background: linear-gradient(150deg, #6C63FF 0%, #A78BFA 60%, #C4B5FD 100%);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  .splash-logo { font-size: 3.5rem; margin-bottom: 0.5rem; }
+  .splash-title { font-size: 2rem; font-weight: 800; color: white; letter-spacing: -0.5px; }
+  .splash-sub { color: rgba(255,255,255,0.8); margin-top: 0.5rem; font-size: 1rem; margin-bottom: 2.5rem; }
+  .btn {
+    display: inline-block;
+    padding: 0.85rem 2rem;
+    border-radius: 50px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-white { background: white; color: var(--purple); width: 100%; max-width: 320px; }
+  .btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.7); width: 100%; max-width: 320px; margin-top: 0.75rem; }
+  .btn-primary { background: var(--purple); color: white; }
+  .btn-full { width: 100%; }
+  .splash-actions { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; width: 100%; }
+
+  /* ---- AUTH PAGES ---- */
+  #register, #login {
+    background: linear-gradient(150deg, #6C63FF 0%, #A78BFA 100%);
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    min-height: 100vh;
+  }
+  .auth-card {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem 1.5rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+  }
+  .auth-logo { text-align: center; font-size: 2.2rem; margin-bottom: 0.2rem; }
+  .auth-title { text-align: center; font-size: 1.45rem; font-weight: 800; color: var(--text); margin-bottom: 0.2rem; }
+  .auth-sub { text-align: center; font-size: 0.85rem; color: var(--muted); margin-bottom: 1.6rem; }
+  .input-group { margin-bottom: 1rem; }
+  .input-label { font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; display: block; }
+  .input-wrap { position: relative; }
+  .input-wrap .inp-icon { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); font-size: 1rem; pointer-events: none; }
+  .auth-input {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 2.6rem;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s;
+    background: var(--bg);
+    font-family: inherit;
+    color: var(--text);
+  }
+  .auth-input:focus { border-color: var(--purple); background: white; box-shadow: 0 0 0 3px rgba(108,99,255,0.1); }
+  .auth-input.input-error { border-color: var(--red); }
+  .field-error { color: var(--red); font-size: 0.75rem; margin-top: 0.3rem; display: none; }
+  .field-error.show { display: block; }
+  .strength-bar { height: 4px; background: var(--border); border-radius: 50px; margin-top: 0.5rem; overflow: hidden; }
+  .strength-fill { height: 100%; border-radius: 50px; width: 0%; transition: all 0.3s; }
+  .strength-text { font-size: 0.72rem; margin-top: 0.25rem; font-weight: 600; }
+  .auth-switch { text-align: center; margin-top: 1.2rem; font-size: 0.85rem; color: var(--muted); }
+  .btn-ghost { background: none; border: none; color: var(--purple); font-weight: 700; cursor: pointer; font-size: 0.85rem; padding: 0; }
+
+  /* ---- BOTTOM NAV ---- */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    display: none;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.6rem 0 0.5rem;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+  .bottom-nav.visible { display: flex; }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.68rem;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.25rem 1rem;
+    border-radius: 10px;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .nav-item .icon { font-size: 1.3rem; }
+  .nav-item.active { color: var(--purple); }
+
+  /* ---- MAIN PAGES WITH BOTTOM NAV SPACE ---- */
+  .main-content { padding-bottom: 72px; flex: 1; overflow-y: auto; }
+
+  /* ---- TOP BAR ---- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.2rem 0.5rem;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .topbar-title { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+  .topbar-logo { font-size: 1.4rem; font-weight: 800; color: var(--purple); }
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  /* ---- HOME PAGE ---- */
+  #home { background: var(--bg); }
+  .home-hero {
+    background: linear-gradient(135deg, var(--purple) 0%, #A78BFA 100%);
+    padding: 1.5rem 1.2rem 2rem;
+    color: white;
+  }
+  .home-greeting { font-size: 0.9rem; opacity: 0.85; }
+  .home-name { font-size: 1.5rem; font-weight: 800; margin-top: 2px; }
+  .home-streak {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.75rem;
+  }
+  .xp-bar-wrap { margin-top: 1rem; }
+  .xp-label { display: flex; justify-content: space-between; font-size: 0.78rem; opacity: 0.85; margin-bottom: 0.4rem; }
+  .xp-bar { background: rgba(255,255,255,0.3); border-radius: 50px; height: 8px; }
+  .xp-fill { background: white; border-radius: 50px; height: 8px; width: 62%; transition: width 1s; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.2rem 0.5rem;
+  }
+  .section-title { font-size: 1rem; font-weight: 700; }
+  .see-all { font-size: 0.82rem; color: var(--purple); font-weight: 600; cursor: pointer; }
+
+  /* Continue learning cards */
+  .scroll-row { display: flex; gap: 0.75rem; padding: 0 1.2rem 0.5rem; overflow-x: auto; scrollbar-width: none; }
+  .scroll-row::-webkit-scrollbar { display: none; }
+  .course-card {
+    min-width: 220px;
+    background: white;
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .course-card:active { transform: scale(0.97); }
+  .course-emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+  .course-tag {
+    display: inline-block;
+    background: var(--purple-light);
+    color: var(--purple);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    margin-bottom: 0.4rem;
+  }
+  .course-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.6rem; }
+  .progress-row { display: flex; align-items: center; gap: 0.5rem; }
+  .mini-bar { flex: 1; background: var(--border); border-radius: 50px; height: 5px; }
+  .mini-fill { background: var(--purple); border-radius: 50px; height: 5px; }
+  .progress-pct { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+
+  /* Daily goals */
+  .goals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 0 1.2rem; }
+  .goal-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+  .goal-icon { font-size: 1.5rem; }
+  .goal-label { font-size: 0.75rem; color: var(--muted); }
+  .goal-value { font-size: 1.2rem; font-weight: 800; }
+  .goal-done { color: var(--green); }
+
+  /* ---- EXPLORE PAGE ---- */
+  #explore { background: var(--bg); }
+  .search-wrap { padding: 0.8rem 1.2rem; }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+  }
+  .search-box input { border: none; outline: none; flex: 1; font-size: 0.9rem; background: transparent; }
+  .filter-chips { display: flex; gap: 0.5rem; padding: 0 1.2rem 0.8rem; overflow-x: auto; scrollbar-width: none; }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  .chip {
+    white-space: nowrap;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: white;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .chip.active { background: var(--purple); color: white; border-color: var(--purple); }
+  .courses-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 0 1.2rem 1rem; }
+  .explore-card {
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .explore-card:active { transform: scale(0.97); }
+  .explore-thumb {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+  }
+  .explore-body { padding: 0.75rem; }
+  .explore-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .explore-meta { font-size: 0.72rem; color: var(--muted); }
+  .stars { color: #FBBF24; font-size: 0.72rem; }
+
+  /* ---- LESSON PAGE ---- */
+  #lesson {
+    background: white;
+    flex-direction: column;
+  }
+  .lesson-header {
+    background: var(--purple);
+    padding: 1rem 1.2rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    border-radius: 50px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .lesson-title-small { font-size: 0.95rem; font-weight: 700; flex: 1; }
+  .lesson-progress-bar { height: 4px; background: rgba(255,255,255,0.3); }
+  .lesson-progress-fill { height: 4px; background: white; transition: width 0.4s; }
+  .lesson-body { padding: 1.5rem 1.2rem; flex: 1; overflow-y: auto; }
+  .lesson-step { display: none; }
+  .lesson-step.active { display: block; }
+  .lesson-step h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.3; }
+  .lesson-step p { color: #374151; line-height: 1.7; margin-bottom: 1rem; font-size: 0.95rem; }
+  .code-block {
+    background: #1A1A2E;
+    color: #A78BFA;
+    border-radius: 10px;
+    padding: 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  .code-block .kw { color: #6C63FF; }
+  .code-block .str { color: #22C55E; }
+  .code-block .fn { color: #F97316; }
+  .quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.6rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+  .quiz-option:hover { border-color: var(--purple); background: var(--purple-light); }
+  .quiz-option.correct { border-color: var(--green); background: #F0FDF4; color: #15803D; }
+  .quiz-option.wrong { border-color: var(--red); background: #FEF2F2; color: #B91C1C; }
+  .quiz-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .lesson-footer {
+    padding: 1rem 1.2rem;
+    border-top: 1px solid var(--border);
+    background: white;
+  }
+
+  /* ---- LEADERBOARD ---- */
+  #leaderboard { background: var(--bg); }
+  .podium { background: linear-gradient(135deg, var(--purple) 0%, #A78BFA 100%); padding: 1.5rem 1.2rem 2rem; }
+  .podium-title { color: white; font-size: 1.1rem; font-weight: 700; text-align: center; margin-bottom: 1.2rem; }
+  .podium-row { display: flex; align-items: flex-end; justify-content: center; gap: 0.75rem; }
+  .podium-place {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .podium-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: white;
+    border: 3px solid white;
+  }
+  .podium-box {
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px 8px 0 0;
+    width: 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 0.25rem;
+    color: white;
+  }
+  .podium-rank { font-size: 1.2rem; font-weight: 800; }
+  .podium-name { font-size: 0.7rem; font-weight: 600; opacity: 0.9; }
+  .podium-xp { font-size: 0.65rem; opacity: 0.75; }
+  .p1 .podium-box { height: 80px; background: rgba(255,255,255,0.3); }
+  .p2 .podium-box { height: 60px; }
+  .p3 .podium-box { height: 45px; }
+  .p1 .podium-avatar { background: #FBBF24; }
+  .p2 .podium-avatar { background: #9CA3AF; }
+  .p3 .podium-avatar { background: #D97706; }
+
+  .leaderboard-list { padding: 1rem 1.2rem; }
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: white;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .lb-row.you { border: 2px solid var(--purple); }
+  .lb-rank { font-size: 0.9rem; font-weight: 700; color: var(--muted); width: 24px; text-align: center; }
+  .lb-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--purple-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .lb-info { flex: 1; }
+  .lb-name { font-size: 0.9rem; font-weight: 700; }
+  .lb-sub { font-size: 0.75rem; color: var(--muted); }
+  .lb-xp { font-size: 0.85rem; font-weight: 700; color: var(--purple); }
+
+  /* ---- PROFILE PAGE ---- */
+  #profile { background: var(--bg); }
+  .profile-hero {
+    background: linear-gradient(135deg, var(--purple) 0%, #A78BFA 100%);
+    padding: 2rem 1.2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: white;
+  }
+  .profile-pic {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 3px solid white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.2rem;
+    margin-bottom: 0.75rem;
+  }
+  .profile-name { font-size: 1.3rem; font-weight: 800; }
+  .profile-level { font-size: 0.85rem; opacity: 0.85; }
+  .badges-row { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; justify-content: center; }
+  .badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; padding: 1rem 1.2rem; }
+  .stat-box {
+    background: white;
+    border-radius: 12px;
+    padding: 0.85rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-val { font-size: 1.4rem; font-weight: 800; color: var(--purple); }
+  .stat-label { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+  .menu-list { padding: 0 1.2rem 1rem; }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .menu-item:active { transform: scale(0.98); }
+  .menu-icon { font-size: 1.2rem; width: 28px; text-align: center; }
+  .menu-arrow { margin-left: auto; color: var(--muted); }
+
+  /* ---- TOAST ---- */
+  .toast {
+    position: fixed;
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: white;
+    padding: 0.65rem 1.25rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 999;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ---- XP POPUP ---- */
+  .xp-popup {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    z-index: 500;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+  .xp-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: all; }
+  .xp-popup-emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+  .xp-popup-title { font-size: 1.3rem; font-weight: 800; color: var(--purple); }
+  .xp-popup-sub { color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem; }
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 499;
+    display: none;
+  }
+  .overlay.show { display: block; }
+</style>
 </head>
 <body>
-    <!-- Home Page -->
-    <d
+
+<!-- ======== SPLASH / LANDING ======== -->
+<div id="splash" class="page active">
+  <div class="splash-logo">⚡</div>
+  <div class="splash-title">SkillSync</div>
+  <div class="splash-sub">Learn skills. Earn XP. Beat the leaderboard.</div>
+  <div class="splash-actions">
+    <button class="btn btn-white" onclick="goToPage('register')">Get Started Free</button>
+    <button class="btn btn-outline" onclick="goToPage('login')">I already have an account</button>
+  </div>
+</div>
+
+<!-- ======== REGISTER PAGE ======== -->
+<div id="register" class="page">
+  <div class="auth-card">
+    <div class="auth-logo">⚡</div>
+    <div class="auth-title">Create Account</div>
+    <div class="auth-sub">Join SkillSync and start learning today</div>
+
+    <div class="input-group">
+      <label class="input-label">Full Name</label>
+      <div class="input-wrap">
+        <span class="inp-icon">👤</span>
+        <input class="auth-input" id="reg-name" type="text" placeholder="Your full name">
+      </div>
+      <div class="field-error" id="err-name">Please enter your name</div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Email</label>
+      <div class="input-wrap">
+        <span class="inp-icon">📧</span>
+        <input class="auth-input" id="reg-email" type="email" placeholder="you@email.com">
+      </div>
+      <div class="field-error" id="err-email">Please enter a valid email</div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Password</label>
+      <div class="input-wrap">
+        <span class="inp-icon">🔒</span>
+        <input class="auth-input" id="reg-pass" type="password" placeholder="Min. 6 characters" oninput="checkStrength(this.value)">
+      </div>
+      <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+      <div class="strength-text" id="strengthText"></div>
+      <div class="field-error" id="err-pass">Password must be at least 6 characters</div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Confirm Password</label>
+      <div class="input-wrap">
+        <span class="inp-icon">🔒</span>
+        <input class="auth-input" id="reg-pass2" type="password" placeholder="Re-enter password">
+      </div>
+      <div class="field-error" id="err-pass2">Passwords do not match</div>
+    </div>
+
+    <button class="btn btn-primary btn-full" style="margin-top:0.5rem" onclick="doRegister()">Create Account 🚀</button>
+    <div class="auth-switch">Already have an account? <button class="btn-ghost" onclick="goToPage('login')">Log In</button></div>
+  </div>
+</div>
+
+<!-- ======== LOGIN PAGE ======== -->
+<div id="login" class="page">
+  <div class="auth-card">
+    <div class="auth-logo">⚡</div>
+    <div class="auth-title">Welcome Back!</div>
+    <div class="auth-sub">Log in to continue your learning streak 🔥</div>
+
+    <div class="input-group">
+      <label class="input-label">Email</label>
+      <div class="input-wrap">
+        <span class="inp-icon">📧</span>
+        <input class="auth-input" id="login-email" type="email" placeholder="you@email.com">
+      </div>
+      <div class="field-error" id="err-login-email">Please enter your email</div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Password</label>
+      <div class="input-wrap">
+        <span class="inp-icon">🔒</span>
+        <input class="auth-input" id="login-pass" type="password" placeholder="Your password">
+      </div>
+      <div class="field-error" id="err-login-pass">Wrong email or password</div>
+    </div>
+
+    <button class="btn btn-primary btn-full" style="margin-top:0.5rem" onclick="doLogin()">Log In →</button>
+    <div class="auth-switch">Don't have an account? <button class="btn-ghost" onclick="goToPage('register')">Sign Up</button></div>
+  </div>
+</div>
+
+<!-- ======== HOME PAGE ======== -->
+<div id="home" class="page">
+  <div class="topbar">
+    <span class="topbar-logo">⚡ SkillSync</span>
+    <div class="avatar" id="topbarAvatar" onclick="goToPage('profile')">?</div>
+  </div>
+  <div class="main-content">
+    <div class="home-hero">
+      <div class="home-greeting" id="homeGreeting">Good morning 👋</div>
+      <div class="home-name" id="homeName">Hey!</div>
+      <div class="home-streak">🔥 <span id="homeStreak">1</span> Day Streak</div>
+      <div class="xp-bar-wrap">
+        <div class="xp-label"><span id="homeXpLabel">Level 1 — 0 XP</span><span>1000 XP</span></div>
+        <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Continue Learning</div>
+      <div class="see-all" onclick="goToPage('explore')">See All</div>
+    </div>
+    <div class="scroll-row">
+      <div class="course-card" onclick="startLesson('python')">
+        <div class="course-emoji">🐍</div>
+        <div class="course-tag">Programming</div>
+        <div class="course-title">Python for Beginners</div>
+        <div class="progress-row">
+          <div class="mini-bar"><div class="mini-fill" style="width:65%"></div></div>
+          <div class="progress-pct">65%</div>
+        </div>
+      </div>
+      <div class="course-card" onclick="startLesson('design')">
+        <div class="course-emoji">🎨</div>
+        <div class="course-tag">Design</div>
+        <div class="course-title">UI/UX Fundamentals</div>
+        <div class="progress-row">
+          <div class="mini-bar"><div class="mini-fill" style="width:30%"></div></div>
+          <div class="progress-pct">30%</div>
+        </div>
+      </div>
+      <div class="course-card" onclick="startLesson('sql')">
+        <div class="course-emoji">🗄️</div>
+        <div class="course-tag">Data</div>
+        <div class="course-title">SQL Basics</div>
+        <div class="progress-row">
+          <div class="mini-bar"><div class="mini-fill" style="width:10%"></div></div>
+          <div class="progress-pct">10%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Today's Goals</div>
+    </div>
+    <div class="goals-grid">
+      <div class="goal-card">
+        <div class="goal-icon">⚡</div>
+        <div class="goal-label">XP Earned</div>
+        <div class="goal-value">85 / 100</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon">📚</div>
+        <div class="goal-label">Lessons Done</div>
+        <div class="goal-value goal-done">3 ✓</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon">🧠</div>
+        <div class="goal-label">Quiz Score</div>
+        <div class="goal-value">4 / 5</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-icon">⏱️</div>
+        <div class="goal-label">Time Spent</div>
+        <div class="goal-value">24 min</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Recommended for You</div>
+    </div>
+    <div class="scroll-row" style="padding-bottom:1rem">
+      <div class="course-card" onclick="startLesson('js')">
+        <div class="course-emoji">🌐</div>
+        <div class="course-tag">Web Dev</div>
+        <div class="course-title">JavaScript Crash Course</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem">⭐ 4.9 · 2.1K learners</div>
+      </div>
+      <div class="course-card" onclick="showToast('Coming soon!')">
+        <div class="course-emoji">🤖</div>
+        <div class="course-tag">AI / ML</div>
+        <div class="course-title">Intro to Machine Learning</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.4rem">⭐ 4.8 · 1.4K learners</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== EXPLORE PAGE ======== -->
+<div id="explore" class="page">
+  <div class="topbar">
+    <span class="topbar-title">Explore</span>
+  </div>
+  <div class="main-content">
+    <div class="search-wrap">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" placeholder="Search skills, courses…" oninput="filterCourses(this.value)">
+      </div>
+    </div>
+    <div class="filter-chips">
+      <div class="chip active" onclick="filterChip(this,'all')">All</div>
+      <div class="chip" onclick="filterChip(this,'programming')">Programming</div>
+      <div class="chip" onclick="filterChip(this,'design')">Design</div>
+      <div class="chip" onclick="filterChip(this,'data')">Data</div>
+      <div class="chip" onclick="filterChip(this,'web')">Web Dev</div>
+      <div class="chip" onclick="filterChip(this,'ai')">AI / ML</div>
+    </div>
+    <div class="courses-grid" id="courseGrid">
+      <div class="explore-card" data-cat="programming" onclick="startLesson('python')">
+        <div class="explore-thumb" style="background:#EEF0FF">🐍</div>
+        <div class="explore-body">
+          <div class="explore-title">Python Basics</div>
+          <div class="explore-meta"><span class="stars">★★★★★</span> 4.9</div>
+        </div>
+      </div>
+      <div class="explore-card" data-cat="web" onclick="startLesson('js')">
+        <div class="explore-thumb" style="background:#FFFBEB">🌐</div>
+        <div class="explore-body">
+          <div class="explore-title">JavaScript</div>
+          <div class="explore-meta"><span class="stars">★★★★★</span> 4.8</div>
+        </div>
+      </div>
+      <div class="explore-card" data-cat="design" onclick="startLesson('design')">
+        <div class="explore-thumb" style="background:#FFF0F5">🎨</div>
+        <div class="explore-body">
+          <div class="explore-title">UI/UX Design</div>
+          <div class="explore-meta"><span class="stars">★★★★☆</span> 4.6</div>
+        </div>
+      </div>
+      <div class="explore-card" data-cat="data" onclick="startLesson('sql')">
+        <div class="explore-thumb" style="background:#F0FDF4">🗄️</div>
+        <div class="explore-body">
+          <div class="explore-title">SQL & Databases</div>
+          <div class="explore-meta"><span class="stars">★★★★★</span> 4.7</div>
+        </div>
+      </div>
+      <div class="explore-card" data-cat="ai" onclick="showToast('Coming soon!')">
+        <div class="explore-thumb" style="background:#F5F0FF">🤖</div>
+        <div class="explore-body">
+          <div class="explore-title">Machine Learning</div>
+          <div class="explore-meta"><span class="stars">★★★★★</span> 5.0</div>
+        </div>
+      </div>
+      <div class="explore-card" data-cat="programming" onclick="showToast('Coming soon!')">
+        <div class="explore-thumb" style="background:#FFF5F0">☕</div>
+        <div class="explore-body">
+          <div class="explore-title">Java Essentials</div>
+          <div class="explore-meta"><span class="stars">★★★★☆</span> 4.5</div>
+        </div>
+      </div>
+      <div class="explore-card" data-cat="web" onclick="showToast('Coming soon!')">
+        <div class="explore-thumb" style="background:#F0F5FF">⚛️</div>
+        <div class="explore-body">
+          <div class="explore-title">React.js</div>
+          <div class="explore-meta"><span class="stars">★★★★★</span> 4.9</div>
+        </div>
+      </div>
+      <div class="explore-card" data-cat="data" onclick="showToast('Coming soon!')">
+        <div class="explore-thumb" style="background:#FFF8F0">📊</div>
+        <div class="explore-body">
+          <div class="explore-title">Data Analysis</div>
+          <div class="explore-meta"><span class="stars">★★★★☆</span> 4.6</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== LESSON PAGE ======== -->
+<div id="lesson" class="page">
+  <div class="lesson-header">
+    <button class="back-btn" onclick="goToPage('home')">← Back</button>
+    <div class="lesson-title-small" id="lessonTitle">Python Basics</div>
+  </div>
+  <div class="lesson-progress-bar">
+    <div class="lesson-progress-fill" id="lessonProg" style="width:0%"></div>
+  </div>
+  <div class="lesson-body" id="lessonBody">
+    <!-- injected dynamically -->
+  </div>
+  <div class="lesson-footer">
+    <button class="btn btn-primary btn-full" id="lessonBtn" onclick="nextStep()">Continue →</button>
+  </div>
+</div>
+
+<!-- ======== LEADERBOARD ======== -->
+<div id="leaderboard" class="page">
+  <div class="topbar">
+    <span class="topbar-title">Leaderboard</span>
+  </div>
+  <div class="main-content">
+    <div class="podium">
+      <div class="podium-title">🏆 This Week's Top Learners</div>
+      <div class="podium-row">
+        <div class="podium-place p2">
+          <div class="podium-avatar">A</div>
+          <div class="podium-box">
+            <div class="podium-rank">2nd</div>
+            <div class="podium-name">Ananya</div>
+            <div class="podium-xp">980 XP</div>
+          </div>
+        </div>
+        <div class="podium-place p1">
+          <div class="podium-avatar">R</div>
+          <div class="podium-box">
+            <div class="podium-rank">👑 1st</div>
+            <div class="podium-name">Rohan</div>
+            <div class="podium-xp">1240 XP</div>
+          </div>
+        </div>
+        <div class="podium-place p3">
+          <div class="podium-avatar">S</div>
+          <div class="podium-box">
+            <div class="podium-rank">3rd</div>
+            <div class="podium-name">Sneha</div>
+            <div class="podium-xp">870 XP</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="leaderboard-list">
+      <div class="lb-row"><div class="lb-rank">4</div><div class="lb-avatar">🧑</div><div class="lb-info"><div class="lb-name">Arjun</div><div class="lb-sub">Python · Data</div></div><div class="lb-xp">820 XP</div></div>
+      <div class="lb-row"><div class="lb-rank">5</div><div class="lb-avatar">👩</div><div class="lb-info"><div class="lb-name">Priya</div><div class="lb-sub">Web Dev · Design</div></div><div class="lb-xp">790 XP</div></div>
+      <div class="lb-row you"><div class="lb-rank">6</div><div class="lb-avatar">⚡</div><div class="lb-info"><div class="lb-name">You (Pratham)</div><div class="lb-sub">Python · JS · SQL</div></div><div class="lb-xp">620 XP</div></div>
+      <div class="lb-row"><div class="lb-rank">7</div><div class="lb-avatar">🧔</div><div class="lb-info"><div class="lb-name">Vikram</div><div class="lb-sub">AI · ML</div></div><div class="lb-xp">580 XP</div></div>
+      <div class="lb-row"><div class="lb-rank">8</div><div class="lb-avatar">👧</div><div class="lb-info"><div class="lb-name">Diya</div><div class="lb-sub">Design</div></div><div class="lb-xp">510 XP</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== PROFILE PAGE ======== -->
+<div id="profile" class="page">
+  <div class="topbar">
+    <span class="topbar-title">Profile</span>
+  </div>
+  <div class="main-content">
+    <div class="profile-hero">
+      <div class="profile-pic" id="profilePic">🧑‍💻</div>
+      <div class="profile-name" id="profileName">User</div>
+      <div class="profile-level" id="profileLevel">Level 1 · 0 XP</div>
+      <div class="badges-row">
+        <div class="badge">🔥 <span id="profileStreak">1</span> Day Streak</div>
+        <div class="badge">⚡ SkillSync Member</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val" id="statCourses">0</div><div class="stat-label">Courses</div></div>
+      <div class="stat-box"><div class="stat-val" id="statXp">0</div><div class="stat-label">Total XP</div></div>
+      <div class="stat-box"><div class="stat-val" id="statStreak">1</div><div class="stat-label">Day Streak</div></div>
+    </div>
+    <div class="menu-list">
+      <div class="menu-item" onclick="showToast('My Courses opened!')"><div class="menu-icon">📚</div> My Courses<div class="menu-arrow">›</div></div>
+      <div class="menu-item" onclick="showToast('Achievements opened!')"><div class="menu-icon">🏅</div> Achievements<div class="menu-arrow">›</div></div>
+      <div class="menu-item" onclick="showToast('Settings opened!')"><div class="menu-icon">⚙️</div> Settings<div class="menu-arrow">›</div></div>
+      <div class="menu-item" onclick="showToast('Help opened!')"><div class="menu-icon">❓</div> Help & Support<div class="menu-arrow">›</div></div>
+      <div class="menu-item" style="color:#EF4444" onclick="doLogout()"><div class="menu-icon">🚪</div> Log Out<div class="menu-arrow">›</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== BOTTOM NAV ======== -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" onclick="navClick(this,'home')"><div class="icon">🏠</div>Home</div>
+  <div class="nav-item" onclick="navClick(this,'explore')"><div class="icon">🔍</div>Explore</div>
+  <div class="nav-item" onclick="navClick(this,'leaderboard')"><div class="icon">🏆</div>Rank</div>
+  <div class="nav-item" onclick="navClick(this,'profile')"><div class="icon">👤</div>Profile</div>
+</div>
+
+<!-- ======== TOAST ======== -->
+<div class="toast" id="toast"></div>
+
+<!-- ======== XP POPUP ======== -->
+<div class="overlay" id="overlay" onclick="closeXpPopup()"></div>
+<div class="xp-popup" id="xpPopup">
+  <div class="xp-popup-emoji">🎉</div>
+  <div class="xp-popup-title">+20 XP Earned!</div>
+  <div class="xp-popup-sub">Keep going — you're on fire! 🔥</div>
+  <button class="btn btn-primary" style="margin-top:1.2rem;width:100%" onclick="closeXpPopup()">Continue</button>
+</div>
+
+<script>
+// ======== AUTH & USER STORE ========
+// All users stored as: { name, email, password, xp, streak, courses }
+
+function getUsers() {
+  return JSON.parse(localStorage.getItem('ss_users') || '{}');
+}
+function saveUsers(u) {
+  localStorage.setItem('ss_users', JSON.stringify(u));
+}
+function getCurrentUser() {
+  const email = localStorage.getItem('ss_current');
+  if (!email) return null;
+  return getUsers()[email] || null;
+}
+function saveCurrentUser(data) {
+  const users = getUsers();
+  users[data.email] = data;
+  saveUsers(users);
+}
+
+// ======== REGISTER ========
+function doRegister() {
+  const name  = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  let valid = true;
+
+  clearErrors(['err-name','err-email','err-pass','err-pass2']);
+  clearInputErrors(['reg-name','reg-email','reg-pass','reg-pass2']);
+
+  if (!name) { showFieldError('err-name','reg-name'); valid = false; }
+  if (!email || !email.includes('@') || !email.includes('.')) { showFieldError('err-email','reg-email'); valid = false; }
+  if (pass.length < 6) { showFieldError('err-pass','reg-pass'); valid = false; }
+  if (pass !== pass2) { showFieldError('err-pass2','reg-pass2', 'Passwords do not match'); valid = false; }
+  if (!valid) return;
+
+  const users = getUsers();
+  if (users[email]) {
+    showFieldError('err-email', 'reg-email', 'Account with this email already exists');
+    return;
+  }
+
+  const newUser = { name, email, password: pass, xp: 0, streak: 1, courses: 0, joinDate: new Date().toLocaleDateString('en-IN') };
+  users[email] = newUser;
+  saveUsers(users);
+  localStorage.setItem('ss_current', email);
+
+  showToast('Account created! Welcome, ' + name.split(' ')[0] + '! 🎉');
+  enterApp(newUser);
+}
+
+// ======== LOGIN ========
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('login-pass').value;
+  let valid = true;
+
+  clearErrors(['err-login-email','err-login-pass']);
+  clearInputErrors(['login-email','login-pass']);
+
+  if (!email) { showFieldError('err-login-email','login-email', 'Please enter your email'); valid = false; }
+  if (!pass)  { showFieldError('err-login-pass','login-pass', 'Please enter your password'); valid = false; }
+  if (!valid) return;
+
+  const users = getUsers();
+  const user = users[email];
+  if (!user || user.password !== pass) {
+    showFieldError('err-login-pass','login-pass','Wrong email or password');
+    document.getElementById('login-email').classList.add('input-error');
+    return;
+  }
+
+  // update streak
+  const today = new Date().toDateString();
+  if (user.lastLogin !== today) {
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    user.streak = user.lastLogin === yesterday ? (user.streak || 1) + 1 : 1;
+    user.lastLogin = today;
+    saveCurrentUser(user);
+  }
+
+  localStorage.setItem('ss_current', email);
+  showToast('Welcome back, ' + user.name.split(' ')[0] + '! 🔥');
+  enterApp(user);
+}
+
+// ======== LOGOUT ========
+function doLogout() {
+  localStorage.removeItem('ss_current');
+  hideNav();
+  goToPage('splash');
+  showToast('Logged out. See you soon! 👋');
+}
+
+// ======== ENTER APP ========
+function enterApp(user) {
+  updateUI(user);
+  goToPage('home');
+  showNav();
+  setTimeout(() => {
+    const xpPct = Math.min((user.xp % 1000) / 10, 100);
+    document.getElementById('xpFill').style.width = xpPct + '%';
+  }, 300);
+}
+
+function updateUI(user) {
+  const firstName = user.name.split(' ')[0];
+  const level = Math.floor(user.xp / 1000) + 1;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  // home
+  document.getElementById('homeGreeting').textContent = greeting + ' 👋';
+  document.getElementById('homeName').textContent = firstName + '!';
+  document.getElementById('homeStreak').textContent = user.streak || 1;
+  document.getElementById('homeXpLabel').textContent = `Level ${level} — ${user.xp} XP`;
+  document.getElementById('topbarAvatar').textContent = firstName[0].toUpperCase();
+
+  // profile
+  document.getElementById('profileName').textContent = user.name;
+  document.getElementById('profileLevel').textContent = `Level ${level} · ${user.xp} XP`;
+  document.getElementById('profileStreak').textContent = user.streak || 1;
+  document.getElementById('statXp').textContent = user.xp;
+  document.getElementById('statCourses').textContent = user.courses || 0;
+  document.getElementById('statStreak').textContent = user.streak || 1;
+
+  // leaderboard "you" row
+  const youRow = document.querySelector('.lb-row.you .lb-name');
+  if (youRow) youRow.textContent = 'You (' + firstName + ')';
+  const youXp = document.querySelector('.lb-row.you .lb-xp');
+  if (youXp) youXp.textContent = user.xp + ' XP';
+}
+
+// ======== PASSWORD STRENGTH ========
+function checkStrength(val) {
+  const fill = document.getElementById('strengthFill');
+  const text = document.getElementById('strengthText');
+  let score = 0;
+  if (val.length >= 6) score++;
+  if (val.length >= 10) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const levels = [
+    { w: '0%', color: 'transparent', label: '' },
+    { w: '25%', color: '#EF4444', label: '🔴 Weak' },
+    { w: '50%', color: '#F97316', label: '🟠 Fair' },
+    { w: '75%', color: '#F59E0B', label: '🟡 Good' },
+    { w: '100%', color: '#22C55E', label: '🟢 Strong' },
+    { w: '100%', color: '#10B981', label: '💪 Very Strong' },
+  ];
+  const l = levels[Math.min(score, 5)];
+  fill.style.width = l.w;
+  fill.style.background = l.color;
+  text.textContent = l.label;
+  text.style.color = l.color;
+}
+
+// ======== ERROR HELPERS ========
+function showFieldError(errId, inputId, msg) {
+  const el = document.getElementById(errId);
+  if (msg) el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById(inputId).classList.add('input-error');
+}
+function clearErrors(ids) { ids.forEach(id => { const el = document.getElementById(id); if(el){ el.classList.remove('show'); } }); }
+function clearInputErrors(ids) { ids.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('input-error'); }); }
+
+// ======== LESSONS DATA ========
+const lessons = {
+  python: {
+    title: 'Python Basics',
+    steps: [
+      { type: 'text', html: `<h2>What is Python? 🐍</h2><p>Python is a beginner-friendly, high-level programming language used in everything from web apps to AI.</p><p>It was created by Guido van Rossum in 1991 and is loved for its clean, readable syntax.</p><div class="code-block"><span class="kw">print</span>(<span class="str">"Hello, SkillSync!"</span>)</div><p>The code above prints a message. Simple, right? That's the Python magic! ✨</p>` },
+      { type: 'text', html: `<h2>Variables in Python 📦</h2><p>Variables store data. In Python, you don't need to declare a type — just assign!</p><div class="code-block">name = <span class="str">"Pratham"</span>\nage = <span class="str">20</span>\nscore = <span class="str">95.5</span>\n<span class="kw">print</span>(name, age, score)</div><p>Python automatically figures out whether your variable is a string, number, or decimal.</p>` },
+      { type: 'quiz', html: `<h2>Quick Quiz! 🧠</h2><p>Which of these correctly prints "Hello" in Python?</p>`, options: ['console.log("Hello")', 'print("Hello")', 'echo "Hello"', 'System.out.println("Hello")'], correct: 1 }
+    ]
+  },
+  js: {
+    title: 'JavaScript Crash Course',
+    steps: [
+      { type: 'text', html: `<h2>JavaScript: The Language of the Web 🌐</h2><p>JavaScript makes websites interactive. Every button you click, every animation you see — that's JS.</p><div class="code-block"><span class="fn">console</span>.log(<span class="str">"Hello from JS!"</span>);</div><p>JS runs directly in your browser — no setup needed to get started!</p>` },
+      { type: 'quiz', html: `<h2>Quiz Time! ⚡</h2><p>How do you declare a variable in modern JavaScript?</p>`, options: ['var x = 5', 'let x = 5', 'const x = 5', 'All of the above'], correct: 3 }
+    ]
+  },
+  design: {
+    title: 'UI/UX Fundamentals',
+    steps: [
+      { type: 'text', html: `<h2>What is UI vs UX? 🎨</h2><p><strong>UI (User Interface)</strong> is how things look — buttons, colors, fonts, layout.</p><p><strong>UX (User Experience)</strong> is how things feel — is it easy to use? Does it make sense?</p><p>Great products need both. A beautiful app that's confusing to use will fail.</p>` },
+      { type: 'quiz', html: `<h2>Quick Check! 🎯</h2><p>Which principle focuses on making an app easy to understand?</p>`, options: ['UI Design', 'UX Design', 'Graphic Design', 'Motion Design'], correct: 1 }
+    ]
+  },
+  sql: {
+    title: 'SQL Basics',
+    steps: [
+      { type: 'text', html: `<h2>What is SQL? 🗄️</h2><p>SQL (Structured Query Language) lets you talk to databases. Want to get user data? Find the most popular products? SQL does that.</p><div class="code-block"><span class="kw">SELECT</span> name, age\n<span class="kw">FROM</span> users\n<span class="kw">WHERE</span> age > 18;</div><p>This query fetches the name and age of all users older than 18.</p>` },
+      { type: 'quiz', html: `<h2>SQL Quiz! 💡</h2><p>Which SQL command is used to get data from a table?</p>`, options: ['GET', 'FETCH', 'SELECT', 'PULL'], correct: 2 }
+    ]
+  }
+};
+
+// ======== LESSON STATE ========
+let currentLesson = null;
+let currentStep = 0;
+let quizAnswered = false;
+
+// ======== NAVIGATION ========
+function goToPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.getAttribute('onclick')?.includes(`'${id}'`));
+  });
+}
+
+function navClick(el, page) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  goToPage(page);
+}
+
+function showNav() { document.getElementById('bottomNav').classList.add('visible'); }
+function hideNav() { document.getElementById('bottomNav').classList.remove('visible'); }
+
+// ======== LESSON ========
+function startLesson(key) {
+  currentLesson = lessons[key];
+  currentStep = 0;
+  quizAnswered = false;
+  document.getElementById('lessonTitle').textContent = currentLesson.title;
+  renderStep();
+  goToPage('lesson');
+}
+
+function renderStep() {
+  const step = currentLesson.steps[currentStep];
+  const total = currentLesson.steps.length;
+  document.getElementById('lessonProg').style.width = ((currentStep / total) * 100) + '%';
+  const body = document.getElementById('lessonBody');
+  const btn = document.getElementById('lessonBtn');
+
+  if (step.type === 'text') {
+    body.innerHTML = `<div class="lesson-step active">${step.html}</div>`;
+    btn.textContent = currentStep < total - 1 ? 'Continue →' : 'Finish ✓';
+    btn.onclick = nextStep;
+    quizAnswered = true;
+  } else if (step.type === 'quiz') {
+    quizAnswered = false;
+    const opts = step.options.map((o, i) =>
+      `<div class="quiz-option" id="opt${i}" onclick="answerQuiz(${i}, ${step.correct})">
+        <div class="quiz-letter">${String.fromCharCode(65+i)}</div>${o}
+      </div>`
+    ).join('');
+    body.innerHTML = `<div class="lesson-step active">${step.html}${opts}</div>`;
+    btn.textContent = 'Check Answer';
+    btn.onclick = () => { if (!quizAnswered) showToast('Pick an answer first!'); };
+  }
+}
+
+function answerQuiz(chosen, correct) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const opts = document.querySelectorAll('.quiz-option');
+  opts[correct].classList.add('correct');
+  if (chosen !== correct) opts[chosen].classList.add('wrong');
+  const btn = document.getElementById('lessonBtn');
+  const total = currentLesson.steps.length;
+  btn.textContent = currentStep < total - 1 ? 'Continue →' : 'Finish ✓';
+  btn.onclick = nextStep;
+}
+
+function nextStep() {
+  if (!quizAnswered) return;
+  const total = currentLesson.steps.length;
+  if (currentStep < total - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    document.getElementById('lessonProg').style.width = '100%';
+    // award XP
+    const user = getCurrentUser();
+    if (user) {
+      user.xp = (user.xp || 0) + 20;
+      user.courses = (user.courses || 0) + 1;
+      saveCurrentUser(user);
+      updateUI(user);
+    }
+    showXpPopup();
+  }
+}
+
+// ======== EXPLORE FILTERS ========
+function filterChip(el, cat) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#courseGrid .explore-card').forEach(card => {
+    card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+  });
+}
+function filterCourses(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#courseGrid .explore-card').forEach(card => {
+    const title = card.querySelector('.explore-title').textContent.toLowerCase();
+    card.style.display = title.includes(q) ? '' : 'none';
+  });
+}
+
+// ======== TOAST ========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ======== XP POPUP ========
+function showXpPopup() {
+  document.getElementById('xpPopup').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeXpPopup() {
+  document.getElementById('xpPopup').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+  goToPage('home');
+  showToast('Lesson complete! 🎉');
+}
+
+// ======== AUTO LOGIN ON LOAD ========
+(function init() {
+  const user = getCurrentUser();
+  if (user) {
+    // already logged in — go straight to app
+    enterApp(user);
+  }
+  // else stay on splash
+})();
+</script>
+</body>
+</html>
 
